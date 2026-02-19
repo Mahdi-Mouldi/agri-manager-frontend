@@ -1,0 +1,46 @@
+  <div class="login-container">
+    <mat-card class="login-card">
+
+      <mat-card-header>
+        <mat-card-title>🌿 AgriManager</mat-card-title>
+        <mat-card-subtitle>Connectez-vous</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form (ngSubmit)="onSubmit()">
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>username</mat-label>
+            <input matInput type="username"
+                  [(ngModel)]="username"
+                  name="username"
+                  placeholder="username"
+                  required>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Mot de passe</mat-label>
+            <input matInput type="password"
+                  [(ngModel)]="password"
+                  name="password"
+                  placeholder="********"
+                  required>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary"
+                  type="submit"
+                  class="full-width"
+                  [disabled]="!username || !password">
+            Se connecter
+          </button>
+
+          <p class="register-link">
+            Pas de compte ?
+            <a routerLink="/register">S'inscrire</a>
+          </p>
+
+        </form>
+      </mat-card-content>
+
+    </mat-card>
+  </div>
