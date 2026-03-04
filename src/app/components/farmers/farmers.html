@@ -31,7 +31,7 @@
             <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>Phone</th>
+            <th>PhoneNumber</th>
             <th class="actions-col">Actions</th>
             </tr>
         </thead>
@@ -39,7 +39,7 @@
             <tr *ngFor="let farmer of filteredFarmers">
             <td class="name-cell">{{ farmer.name }}</td>
             <td>{{ farmer.email }}</td>
-            <td>{{ farmer.phone }}</td>
+            <td>{{ farmer.phoneNumber }}</td>
             <td class="actions-cell">
                 <button class="btn-icon btn-edit" (click)="openEditModal(farmer)" title="Edit">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -47,7 +47,7 @@
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                 </svg>
                 </button>
-                <button class="btn-icon btn-delete" (click)="deleteFarmer(farmer.id)" title="Delete">
+                <button class="btn-icon btn-delete" (click)="deleteFarmer(farmer.id!)" title="Delete">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -95,8 +95,8 @@
         </div>
 
         <div class="form-group">
-            <label>Phone</label>
-            <input type="text" [(ngModel)]="form.phone" placeholder="Enter phone number" />
+            <label>PhoneNumber</label>
+            <input type="text" [(ngModel)]="form.phoneNumber" placeholder="Enter phone number" />
         </div>
         </div>
 

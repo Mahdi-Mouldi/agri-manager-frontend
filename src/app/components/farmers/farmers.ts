@@ -1,12 +1,13 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FarmerService } from '../../core/services/farmer.service';
 
 export interface Farmer {
-  id: number;
+  id?: number;
   name: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
 }
 
 @Component({
@@ -18,89 +19,121 @@ export interface Farmer {
 })
 export class FarmersComponent implements OnInit {
 
-  // ── State ──────────────────────────────────────
   farmers: Farmer[] = [];
   searchTerm: string = '';
   showModal: boolean = false;
   editMode: boolean = false;
   editId: number | null = null;
+  loading: boolean = false;
+  errorMessage: string = '';
 
-  form = { name: '', email: '', phone: '' };
+  form: Farmer = { name: '', email: '', phoneNumber: '' };
   formErrors = { name: false, email: false };
 
-  // ── Mock data (replace with HTTP calls later) ──
+  constructor(private farmerService: FarmerService) {}
+
+  // ── Charger la liste depuis le backend ──────────
   ngOnInit(): void {
-    this.farmers = [
-      { id: 1, name: 'Jean Dupont',     email: 'jean.dupont@email.com',     phone: '+33 6 12 34 56 78' },
-      { id: 2, name: 'Marie Claire',    email: 'marie.claire@email.com',    phone: '+33 6 23 45 67 89' },
-      { id: 3, name: 'Pierre Martin',   email: 'pierre.martin@email.com',   phone: '+33 6 34 56 78 90' },
-      { id: 4, name: 'Sophie Bernard',  email: 'sophie.bernard@email.com',  phone: '+33 6 45 67 89 01' },
-      { id: 5, name: 'Luc Petit',       email: 'luc.petit@email.com',       phone: '+33 6 56 78 90 12' },
-    ];
+    this.loadFarmers();
   }
 
-  // ── Computed: filtered list ────────────────────
+  loadFarmers(): void {
+    this.loading = true;
+    this.farmerService.getAll().subscribe({
+      next: (data) => {
+        this.farmers = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement farmers', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  // ── Filtrage local (recherche) ──────────────────
   get filteredFarmers(): Farmer[] {
     const term = this.searchTerm.toLowerCase();
     if (!term) return this.farmers;
     return this.farmers.filter(f =>
       f.name.toLowerCase().includes(term) ||
       f.email.toLowerCase().includes(term) ||
-      f.phone.includes(term)
+      f.phoneNumber.includes(term)
     );
   }
 
-  // ── Modal ──────────────────────────────────────
+  // ── Modals ──────────────────────────────────────
   openModal(): void {
     this.editMode = false;
     this.editId = null;
-    this.form = { name: '', email: '', phone: '' };
+    this.form = { name: '', email: '', phoneNumber: '' };
     this.formErrors = { name: false, email: false };
     this.showModal = true;
   }
 
   openEditModal(farmer: Farmer): void {
     this.editMode = true;
-    this.editId = farmer.id;
-    this.form = { name: farmer.name, email: farmer.email, phone: farmer.phone };
+    this.editId = farmer.id!;
+    this.form = { name: farmer.name, email: farmer.email, phoneNumber: farmer.phoneNumber };
     this.formErrors = { name: false, email: false };
     this.showModal = true;
   }
 
   closeModal(): void {
     this.showModal = false;
+    this.errorMessage = '';
   }
 
-  // ── Validation ─────────────────────────────────
+  // ── Validation ──────────────────────────────────
   private validate(): boolean {
     this.formErrors.name  = !this.form.name.trim();
     this.formErrors.email = !this.form.email.trim() || !this.form.email.includes('@');
     return !this.formErrors.name && !this.formErrors.email;
   }
 
-  // ── Submit (Add or Edit) ───────────────────────
+  // ── Ajouter ou modifier ─────────────────────────
   submitForm(): void {
     if (!this.validate()) return;
 
     if (this.editMode && this.editId !== null) {
-      // TODO: replace with this.farmerService.update(this.editId, this.form)
-      const index = this.farmers.findIndex(f => f.id === this.editId);
-      if (index !== -1) {
-        this.farmers[index] = { id: this.editId, ...this.form };
-      }
+      // PUT /api/farmers/:id
+      this.farmerService.updateFarmer(this.editId, this.form).subscribe({
+        next: (updated) => {
+          const index = this.farmers.findIndex(f => f.id === this.editId);
+          if (index !== -1) this.farmers[index] = updated;
+          this.closeModal();
+        },
+        error: (err) => {
+          this.errorMessage = 'Erreur lors de la mise à jour.';
+          console.error(err);
+        }
+      });
     } else {
-      // TODO: replace with this.farmerService.create(this.form)
-      const newId = Math.max(...this.farmers.map(f => f.id), 0) + 1;
-      this.farmers.push({ id: newId, ...this.form });
+      // POST /api/farmers
+      this.farmerService.create(this.form).subscribe({
+        next: (created) => {
+          this.farmers.push(created);
+          this.closeModal();
+        },
+        error: (err) => {
+          this.errorMessage = 'Erreur lors de la création.';
+          console.error(err);
+        }
+      });
     }
-
-    this.closeModal();
   }
 
-  // ── Delete ─────────────────────────────────────
+  // ── Supprimer ───────────────────────────────────
   deleteFarmer(id: number): void {
-    if (!confirm('Delete this farmer?')) return;
-    // TODO: replace with this.farmerService.delete(id)
-    this.farmers = this.farmers.filter(f => f.id !== id);
+    if (!confirm('Supprimer cet agriculteur ?')) return;
+    // DELETE /api/farmers/:id
+    this.farmerService.deleteFarmeg(id).subscribe({
+      next: () => {
+        this.farmers = this.farmers.filter(f => f.id !== id);
+      },
+      error: (err) => {
+        console.error('Erreur suppression', err);
+      }
+    });
   }
 }
