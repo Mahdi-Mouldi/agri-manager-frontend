@@ -1,0 +1,26 @@
+    .dashboard-card {
+    max-width: 800px;
+    margin: 50px auto;
+    }
+
+    .token-section {
+    margin: 20px 0;
+    }
+
+    .token-box {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    }
+
+    .token-info {
+    margin-top: 15px;
+    font-size: 14px;
+    }

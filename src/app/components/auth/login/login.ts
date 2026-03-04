@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { Auth } from '../auth';  // chemin vers ton service
+import { Auth } from '../../../core/services/auth';  // chemin vers ton service
 
 
 @Component({

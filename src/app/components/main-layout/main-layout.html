@@ -1,0 +1,19 @@
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <app-navbar></app-navbar>
+
+  <!-- Contenu principal -->
+  <div class="main-content">
+    
+    <!-- Header (apparaît sur toutes les pages) -->
+    <app-header></app-header>
+
+    <!-- Contenu qui change selon la page -->
+    <div class="page-body">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+</div>

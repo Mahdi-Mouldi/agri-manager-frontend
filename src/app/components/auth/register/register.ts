@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { Auth } from '../auth'; // نفس service اللي استعملتو في login
+import { Auth } from '../../../core/services/auth'; // نفس service اللي استعملتو في login
 
 @Component({
   selector: 'app-register',

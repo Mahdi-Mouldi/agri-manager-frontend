@@ -1,0 +1,90 @@
+<div class="sidebar">
+
+  <!-- Logo -->
+  <div class="brand">
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22V12"/>
+        <path d="M12 12C12 12 7 9 7 4c0 0 5 1 5 8z"/>
+        <path d="M12 12c0 0 5-3 5-8 0 0-5 1-5 8z"/>
+        <path d="M5 22c0-4 3-7 7-8"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <h2>Agri Manager</h2>
+      <span>Farm Management</span>
+    </div>
+  </div>
+
+  <!-- Section label -->
+  <p class="nav-label">Navigation</p>
+
+  <!-- Menu Links -->
+  <nav>
+    <a routerLink="/dashboard" routerLinkActive="active">
+      <span class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+      </span>
+      <span>Dashboard</span>
+      <span class="indicator"></span>
+    </a>
+
+    <a routerLink="/farmers" routerLinkActive="active">
+      <span class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
+      <span>Farmers</span>
+      <span class="indicator"></span>
+    </a>
+
+    <a routerLink="/parcelles" routerLinkActive="active">
+      <span class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+          <line x1="9" y1="3" x2="9" y2="18"/>
+          <line x1="15" y1="6" x2="15" y2="21"/>
+        </svg>
+      </span>
+      <span>Parcelles</span>
+      <span class="indicator"></span>
+    </a>
+  </nav>
+
+  <!-- Spacer -->
+  <div class="spacer"></div>
+
+  <!-- User card -->
+  <div class="user-card">
+    <div class="user-avatar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    <div class="user-info">
+      <span class="user-name">Admin</span>
+      <span class="user-role">Gestionnaire</span>
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <div class="logout" (click)="logout()">
+    <span class="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+    </span>
+    <span>Déconnexion</span>
+  </div>
+
+</div>

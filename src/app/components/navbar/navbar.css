@@ -1,0 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lora:wght@600&display=swap');
+
+:host {
+  --green-900: #14532d;
+  --green-800: #166534;
+  --green-700: #15803d;
+  --green-600: #16a34a;
+  --green-500: #22c55e;
+  --green-100: #dcfce7;
+  --green-50:  #f0fdf4;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border: #e5e7eb;
+  --bg-hover: #f9fafb;
+  --sidebar-width: 256px;
+}
+
+/* ─── Sidebar shell ─────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+
+  /* Subtle top accent line */
+  box-shadow: inset 4px 0 0 0 var(--green-600), 2px 0 16px rgba(0,0,0,0.05);
+}
+
+/* ─── Brand ─────────────────────────────────────── */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 4px 6px 4px;
+  margin-bottom: 28px;
+}
+
+.logo {
+  background: linear-gradient(135deg, var(--green-700), var(--green-500));
+  color: white;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+}
+
+.logo svg {
+  width: 22px;
+  height: 22px;
+  stroke: white;
+}
+
+.brand-text h2 {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 1px;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.brand-text span {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ─── Section label ──────────────────────────────── */
+.nav-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 10px;
+  margin-bottom: 6px;
+}
+
+/* ─── Nav links ──────────────────────────────────── */
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.18s, color 0.18s, transform 0.15s;
+  position: relative;
+  cursor: pointer;
+}
+
+nav a .icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.18s, box-shadow 0.18s;
+}
+
+nav a .icon svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  transition: stroke 0.18s;
+}
+
+/* Active indicator dot */
+nav a .indicator {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green-500);
+  margin-left: auto;
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+/* ── Hover state ── */
+nav a:hover:not(.active) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  transform: translateX(2px);
+}
+
+nav a:hover:not(.active) .icon {
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+/* ── Active state ── */
+nav a.active {
+  background: var(--green-50);
+  color: var(--green-800);
+}
+
+nav a.active .icon {
+  background: var(--green-600);
+  color: white;
+  box-shadow: 0 3px 10px rgba(22, 163, 74, 0.3);
+}
+
+nav a.active .icon svg {
+  stroke: white;
+}
+
+nav a.active span:not(.icon):not(.indicator) {
+  font-weight: 600;
+  color: var(--green-800);
+}
+
+nav a.active .indicator {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ─── Spacer ─────────────────────────────────────── */
+.spacer {
+  flex: 1;
+}
+
+/* ─── User card ──────────────────────────────────── */
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--green-50);
+  border: 1px solid var(--green-100);
+  margin-bottom: 8px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green-700), var(--green-500));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-avatar svg {
+  width: 15px;
+  height: 15px;
+  stroke: white;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ─── Logout ─────────────────────────────────────── */
+.logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.15s;
+}
+
+.logout .icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.18s;
+}
+
+.logout .icon svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  transition: stroke 0.18s;
+}
+
+.logout:hover {
+  background: #fff1f2;
+  color: #dc2626;
+  transform: translateX(2px);
+}
+
+.logout:hover .icon {
+  background: #fee2e2;
+}

@@ -1,0 +1,23 @@
+    <mat-card class="dashboard-card">
+    <mat-card-header>
+        <mat-card-title>🎉 Dashboard</mat-card-title>
+        <mat-card-subtitle>Token complet affiché</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+        <div class="token-section">
+        <h3>Token JWT :</h3>
+        <pre class="token-box">{{ tokenValue }}</pre>
+        
+        <p class="token-info">
+            <strong>Longueur:</strong> {{ tokenValue.length }} caractères
+        </p>
+        </div>
+    </mat-card-content>
+
+    <mat-card-actions >
+        <button mat-raised-button color="warn" (click)="logout()">
+        Déconnexion
+        </button>
+    </mat-card-actions>
+    </mat-card>
