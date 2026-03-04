@@ -1,44 +1,39 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
-import { Auth } from '../../../core/services/auth'; // نفس service اللي استعملتو في login
+import { RouterModule, Router } from '@angular/router';
+import { Auth } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule
-  ],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.html',
   styleUrl: './register.scss'
 })
 export class RegisterComponent {
   username: string = '';
   password: string = '';
+  loading: boolean = false;
+  errorMessage: string = '';
+  successMessage: string = '';
 
   constructor(private authService: Auth, private router: Router) {}
 
   onSubmit() {
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
     this.authService.register(this.username, this.password).subscribe({
-      next: (reponse: any) => {
-        console.log('Register OK', reponse);
-        // بعد التسجيل نمشيو للـ login
-        this.router.navigate(['/login']);
+      next: () => {
+        this.successMessage = 'Compte créé avec succès ! Redirection...';
+        setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (error) => {
-        console.error('Register echoué', error);
+        this.loading = false;
+        this.errorMessage = 'Erreur lors de la création du compte. Réessayez.';
+        console.error('Register échoué', error);
       }
     });
   }

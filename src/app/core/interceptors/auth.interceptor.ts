@@ -10,14 +10,17 @@ Si le token n’existe pas : il laisse la requête normale partir sans rien chan
 
 import { HttpInterceptorFn } from "@angular/common/http";
 
-
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-    const token = localStorage.getItem('token');
-    if(token){
-        const authReq= req.clone({
-            setHeaders: {Authorization: `Barer $(token)`}
-        });
-        return next(authReq);
-    }
-    return next(req);
-}
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    const authReq = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`  // ✅ Corrigé : Bearer (pas Barer) et ${} (pas $())
+      }
+    });
+    return next(authReq);
+  }
+
+  return next(req);
+};
