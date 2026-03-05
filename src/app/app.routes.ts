@@ -6,6 +6,7 @@ import { FarmersComponent } from './components/farmers/farmers';         // ← 
 import { ParcellesComponent } from './components/parcelles/parcelles';   // ← ajouter
 import { MainLayout } from './components/main-layout/main-layout';
 import { authGuard } from './core/guards/auth.guards';
+import { FermesComponent } from './components/fermes/ferme';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -19,6 +20,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'farmers',   component: FarmersComponent },    // ← corrigé
       { path: 'parcelles', component: ParcellesComponent },  // ← ajouté
+      {path: 'fermes', component: FermesComponent},
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

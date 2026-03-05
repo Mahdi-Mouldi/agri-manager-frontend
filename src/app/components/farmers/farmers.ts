@@ -4,13 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { FarmerService } from '../../core/services/farmer.service';
+import { Farmer } from '../../core/models/farmer.model';
 
-export interface Farmer {
-  id?: number;
-  name: string;
-  email: string;
-  phoneNumber: string;
-}
+
 
 @Component({
   selector: 'app-farmers',
