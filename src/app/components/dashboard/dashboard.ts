@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { Auth } from '../../core/services/auth';
@@ -8,7 +7,7 @@ import { Auth } from '../../core/services/auth';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule, MatButtonModule],
+  imports: [CommonModule,  MatCardModule, MatButtonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

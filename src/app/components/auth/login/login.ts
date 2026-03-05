@@ -26,7 +26,7 @@ export class LoginComponent {
     this.authService.login(this.username, this.password).subscribe({
       next: (reponse: any) => {
         this.authService.setToken(reponse.token);
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/app/dashboard']);
       },
       error: (error) => {
         this.loading = false;

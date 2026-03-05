@@ -5,14 +5,16 @@ import { DashboardComponent } from './components/dashboard/dashboard';
 import { FarmersComponent } from './components/farmers/farmers';         // ← ajouter
 import { ParcellesComponent } from './components/parcelles/parcelles';   // ← ajouter
 import { MainLayout } from './components/main-layout/main-layout';
+import { authGuard } from './core/guards/auth.guards';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
   {
-    path: '',
+    path: 'app',
     component: MainLayout,
+    canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'farmers',   component: FarmersComponent },    // ← corrigé
@@ -20,6 +22,6 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
-
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

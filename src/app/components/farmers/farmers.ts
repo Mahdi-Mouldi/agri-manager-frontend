@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { FarmerService } from '../../core/services/farmer.service';
 
 export interface Farmer {
@@ -30,28 +32,37 @@ export class FarmersComponent implements OnInit {
   form: Farmer = { name: '', email: '', phoneNumber: '' };
   formErrors = { name: false, email: false };
 
-  constructor(private farmerService: FarmerService) {}
+  constructor(
+    private farmerService: FarmerService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  // ── Charger la liste depuis le backend ──────────
   ngOnInit(): void {
     this.loadFarmers();
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.loadFarmers();
+    });
   }
 
   loadFarmers(): void {
     this.loading = true;
     this.farmerService.getAll().subscribe({
       next: (data) => {
-        this.farmers = data;
+        this.farmers = [...data];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erreur chargement farmers', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  // ── Filtrage local (recherche) ──────────────────
   get filteredFarmers(): Farmer[] {
     const term = this.searchTerm.toLowerCase();
     if (!term) return this.farmers;
@@ -62,12 +73,12 @@ export class FarmersComponent implements OnInit {
     );
   }
 
-  // ── Modals ──────────────────────────────────────
   openModal(): void {
     this.editMode = false;
     this.editId = null;
     this.form = { name: '', email: '', phoneNumber: '' };
     this.formErrors = { name: false, email: false };
+    this.errorMessage = '';
     this.showModal = true;
   }
 
@@ -76,6 +87,7 @@ export class FarmersComponent implements OnInit {
     this.editId = farmer.id!;
     this.form = { name: farmer.name, email: farmer.email, phoneNumber: farmer.phoneNumber };
     this.formErrors = { name: false, email: false };
+    this.errorMessage = '';
     this.showModal = true;
   }
 
@@ -84,52 +96,52 @@ export class FarmersComponent implements OnInit {
     this.errorMessage = '';
   }
 
-  // ── Validation ──────────────────────────────────
   private validate(): boolean {
     this.formErrors.name  = !this.form.name.trim();
     this.formErrors.email = !this.form.email.trim() || !this.form.email.includes('@');
     return !this.formErrors.name && !this.formErrors.email;
   }
 
-  // ── Ajouter ou modifier ─────────────────────────
   submitForm(): void {
     if (!this.validate()) return;
 
     if (this.editMode && this.editId !== null) {
-      // PUT /api/farmers/:id
       this.farmerService.updateFarmer(this.editId, this.form).subscribe({
         next: (updated) => {
           const index = this.farmers.findIndex(f => f.id === this.editId);
-          if (index !== -1) this.farmers[index] = updated;
+          if (index !== -1) {
+            this.farmers[index] = updated;
+            this.farmers = [...this.farmers];
+          }
           this.closeModal();
+          this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = 'Erreur lors de la mise à jour.';
+          this.errorMessage = 'Erreur lors de la mise a jour.';
           console.error(err);
         }
       });
     } else {
-      // POST /api/farmers
       this.farmerService.create(this.form).subscribe({
         next: (created) => {
-          this.farmers.push(created);
+          this.farmers = [...this.farmers, created];
           this.closeModal();
+          this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = 'Erreur lors de la création.';
+          this.errorMessage = 'Erreur lors de la creation.';
           console.error(err);
         }
       });
     }
   }
 
-  // ── Supprimer ───────────────────────────────────
   deleteFarmer(id: number): void {
     if (!confirm('Supprimer cet agriculteur ?')) return;
-    // DELETE /api/farmers/:id
-    this.farmerService.deleteFarmeg(id).subscribe({
+    this.farmerService.deleteFarmer(id).subscribe({
       next: () => {
-        this.farmers = this.farmers.filter(f => f.id !== id);
+        this.farmers = [...this.farmers.filter(f => f.id !== id)];
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erreur suppression', err);
