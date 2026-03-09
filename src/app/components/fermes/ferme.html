@@ -2,22 +2,45 @@
 
   <!-- Header -->
   <div class="page-header">
-    <h2>Fermes Management</h2>
-    <button class="btn-add" (click)="openModal()">
+    <div>
+      <h2>Fermes/Parcelles</h2>
+      <p>Gérez vos fermes et parcelles agricoles</p>
+    </div>
+    <button class="btn-add" (click)="openAddFermeModal()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
-      Add Ferme
+      Ajouter une ferme
     </button>
   </div>
 
-  <!-- Search -->
-  <div class="search-wrap">
-    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <input type="text" class="search-input" placeholder="Search fermes by name or address..."
-      [(ngModel)]="searchTerm"/>
+  <!-- Filters -->
+  <div class="filters-wrap">
+    <div class="filter-row">
+      <div class="search-group">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="search-input" placeholder="Filtrer par agriculteur..."
+          [(ngModel)]="filterAgriculteur" (input)="applyFilters()"/>
+        <button class="clear-btn" *ngIf="filterAgriculteur" (click)="filterAgriculteur=''; applyFilters()">×</button>
+      </div>
+      <select class="filter-select" [(ngModel)]="filterRegion" (change)="applyFilters()">
+        <option value="">Tous — Région</option>
+        <option *ngFor="let r of regions" [value]="r">{{ r }}</option>
+      </select>
+      <select class="filter-select" [(ngModel)]="filterPropriete" (change)="applyFilters()">
+        <option value="">Tous — Propriété</option>
+        <option value="Location">Location</option>
+        <option value="Propriété">Propriété</option>
+      </select>
+      <button class="btn-refresh" (click)="loadFermes()" title="Rafraîchir">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- Table -->
@@ -25,102 +48,252 @@
     <table class="fermes-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Address</th>
-          <th>Superficie (ha)</th>
-          <th>Description</th>
-          <th class="actions-col">Actions</th>
+          <th class="th-expand"></th>
+          <th>Nom Ferme</th>
+          <th>Agriculteur</th>
+          <th>Surface</th>
+          <th>Emplacement</th>
+          <th>Propriété Foncière</th>
+          <th class="th-actions">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let ferme of filteredFermes">
-          <td class="name-cell">{{ ferme.ferme_name }}</td>
-          <td>{{ ferme.ferme_address }}</td>
-          <td>{{ ferme.superficieTotale }}</td>
-          <td>{{ ferme.description }}</td>
-          <td class="actions-cell">
-            <button class="btn-icon btn-edit" (click)="openEditModal(ferme)" title="Edit">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        <ng-container *ngFor="let ferme of filteredFermes">
+
+          <!-- Ferme row -->
+          <tr class="ferme-row" [class.expanded]="expandedFermeId === ferme.id">
+            <td class="td-expand">
+              <button class="btn-expand" (click)="toggleFerme(ferme)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                  [class.rotated]="expandedFermeId === ferme.id">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            </td>
+            <td class="td-ferme-name">
+              {{ ferme.ferme_name }}
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
               </svg>
-            </button>
-            <button class="btn-icon btn-delete" (click)="deleteFerme(ferme.id!)" title="Delete">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                <path d="M10 11v6"/><path d="M14 11v6"/>
-                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-              </svg>
-            </button>
-          </td>
-        </tr>
+            </td>
+            <td>{{ getFarmerName(ferme.farmer_id) }}</td>
+            <td>{{ ferme.superficieTotale }} ha</td>
+            <td>{{ ferme.ferme_address }}</td>
+            <td>{{ ferme.description }}</td>
+            <td class="td-actions">
+              <button class="btn-action btn-map" title="Voir sur carte">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                </svg>
+              </button>
+              <button class="btn-action btn-edit" (click)="openEditFermeModal(ferme)" title="Modifier">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button class="btn-action btn-ndvi" title="NDVI">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/>
+                  <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+              </button>
+              <button class="btn-action btn-delete" (click)="deleteFerme(ferme.id!)" title="Supprimer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6"/><path d="M14 11v6"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Parcelles sub-table -->
+          <tr class="parcelles-row" *ngIf="expandedFermeId === ferme.id">
+            <td colspan="7" class="parcelles-cell">
+              <div class="parcelles-container">
+                <div class="parcelles-header">
+                  <span class="parcelles-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                    </svg>
+                    Parcelles de {{ ferme.ferme_name }}
+                  </span>
+                  <button class="btn-add-parcelle" (click)="openAddParcelleModal(ferme)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Ajouter parcelle
+                  </button>
+                </div>
+
+                <table class="parcelles-table" *ngIf="parcelles[ferme.id!] && parcelles[ferme.id!].length > 0">
+                  <thead>
+                    <tr>
+                      <th>Titre Parcelle</th>
+                      <th>Culture</th>
+                      <th>Variété</th>
+                      <th>Surface (intercalaire)</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let parcelle of parcelles[ferme.id!]">
+                      <td class="parcelle-name">
+                        {{ parcelle.name }}
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </td>
+                      <td>{{ parcelle.culture || '—' }}</td>
+                      <td>{{ parcelle.variete || '—' }}</td>
+                      <td>{{ parcelle.superficie ? (parcelle.superficie + ' ha') : '—' }}</td>
+                      <td class="td-actions">
+                        <button class="btn-action btn-edit" (click)="openEditParcelleModal(parcelle)" title="Modifier">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
+                        <button class="btn-action btn-delete-parcelle" (click)="deleteParcelle(parcelle.id!)" title="Supprimer">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="no-parcelles" *ngIf="!parcelles[ferme.id!] || parcelles[ferme.id!].length === 0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                  </svg>
+                  <p>Aucune parcelle pour cette ferme</p>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+        </ng-container>
+
         <tr *ngIf="filteredFermes.length === 0">
-          <td colspan="5" class="empty-state">No fermes found.</td>
+          <td colspan="7" class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            </svg>
+            <p>Aucune ferme trouvée</p>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
-
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+<!-- ── Modal Ferme ── -->
+<div class="modal-overlay" *ngIf="showFermeModal" (click)="closeModal()">
   <div class="modal" (click)="$event.stopPropagation()">
-
     <div class="modal-header">
-      <h3>{{ editMode ? 'Edit Ferme' : 'Add New Ferme' }}</h3>
+      <h3>{{ fermeEditMode ? "Modifier la ferme" : "Ajouter une ferme" }}</h3>
       <button class="modal-close" (click)="closeModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
-
     <div class="modal-body">
       <div class="form-group">
         <label>Nom de la ferme</label>
-        <input type="text" [(ngModel)]="form.ferme_name" placeholder="Enter ferme name" [class.error]="formErrors.ferme_name"/>
-        <span class="error-msg" *ngIf="formErrors.ferme_name">Name is required</span>
+        <input type="text" [(ngModel)]="fermeForm.ferme_name" placeholder="Enter ferme name" [class.error]="fermeErrors.ferme_name"/>
+        <span class="error-msg" *ngIf="fermeErrors.ferme_name">Requis</span>
       </div>
       <div class="form-group">
-        <label>Adresse</label>
-        <input type="text" [(ngModel)]="form.ferme_address" placeholder="Enter address" [class.error]="formErrors.ferme_address"/>
-        <span class="error-msg" *ngIf="formErrors.ferme_address">Address is required</span>
+        <label>Adresse / Emplacement</label>
+        <input type="text" [(ngModel)]="fermeForm.ferme_address" placeholder="Ex: Nabeul - Korba" [class.error]="fermeErrors.ferme_address"/>
+        <span class="error-msg" *ngIf="fermeErrors.ferme_address">Requis</span>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label>Superficie (ha)</label>
-          <input type="number" [(ngModel)]="form.superficieTotale" placeholder="0.0"/>
+          <input type="number" [(ngModel)]="fermeForm.superficieTotale" placeholder="0.0"/>
         </div>
         <div class="form-group">
           <label>Farmer ID</label>
-          <input type="number" [(ngModel)]="form.farmer_id" placeholder="Farmer ID"/>
+          <input type="number" [(ngModel)]="fermeForm.farmer_id" placeholder="ID du farmer"/>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label>Latitude</label>
-          <input type="number" [(ngModel)]="form.latitude" placeholder="0.000000"/>
+          <input type="number" [(ngModel)]="fermeForm.latitude" placeholder="36.8"/>
         </div>
         <div class="form-group">
           <label>Longitude</label>
-          <input type="number" [(ngModel)]="form.longitude" placeholder="0.000000"/>
+          <input type="number" [(ngModel)]="fermeForm.longitude" placeholder="10.1"/>
         </div>
       </div>
       <div class="form-group">
-        <label>Description</label>
-        <textarea [(ngModel)]="form.description" placeholder="Enter description" rows="3"></textarea>
+        <label>Propriété foncière</label>
+        <input type="text" [(ngModel)]="fermeForm.description" placeholder="Ex: Location"/>
       </div>
       <div class="error-alert" *ngIf="errorMessage">{{ errorMessage }}</div>
     </div>
-
     <div class="modal-footer">
       <button class="btn-cancel" (click)="closeModal()">Cancel</button>
-      <button class="btn-submit" (click)="submitForm()">
-        {{ editMode ? 'Save Changes' : 'Add Ferme' }}
+      <button class="btn-submit" (click)="submitFermeForm()">
+        {{ fermeEditMode ? "Sauvegarder" : "Ajouter ferme" }}
       </button>
     </div>
+  </div>
+</div>
 
+<!-- ── Modal Parcelle ── -->
+<div class="modal-overlay" *ngIf="showParcelleModal" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ parcelleEditMode ? "Modifier la parcelle" : "Ajouter une parcelle" }}</h3>
+      <button class="modal-close" (click)="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nom de la parcelle</label>
+        <input type="text" [(ngModel)]="parcelleForm.name" placeholder="Enter parcelle name" [class.error]="parcelleErrors.name"/>
+        <span class="error-msg" *ngIf="parcelleErrors.name">Requis</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Culture</label>
+          <input type="text" [(ngModel)]="parcelleForm.culture" placeholder="Ex: Tomate"/>
+        </div>
+        <div class="form-group">
+          <label>Variété</label>
+          <input type="text" [(ngModel)]="parcelleForm.variete" placeholder="Ex: Savera"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Surface intercalaire (ha)</label>
+          <input type="number" [(ngModel)]="parcelleForm.superficie" placeholder="0.0"/>
+        </div>
+        <div class="form-group">
+          <label>Ferme ID</label>
+          <input type="number" [(ngModel)]="parcelleForm.fermeId" [readonly]="true" class="readonly"/>
+        </div>
+      </div>
+      <div class="error-alert" *ngIf="errorMessage">{{ errorMessage }}</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+      <button class="btn-submit" (click)="submitParcelleForm()">
+        {{ parcelleEditMode ? "Sauvegarder" : "Ajouter parcelle" }}
+      </button>
+    </div>
   </div>
 </div>

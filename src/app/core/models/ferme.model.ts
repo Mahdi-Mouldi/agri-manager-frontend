@@ -7,4 +7,6 @@ export interface Ferme {
     longitude: number;
     description: string;
     farmer_id: number;
+    synced?: boolean;  // ← ajouter cette ligne
+
     }
