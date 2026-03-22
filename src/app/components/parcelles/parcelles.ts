@@ -63,7 +63,7 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
   ){}
   ngOnInit(): void {
     this.loadParcelles();
-    this.loadFermes();
+    this.loadFermes();  
   }
   ngAfterViewInit(): void {
     this.initMap();
@@ -75,6 +75,7 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
         this.parcelles = data;
         this.filteredParcelles = data;
         this.cdr.detectChanges();
+        this.afficherTousLesPolygones();
       },
             error: (err) => console.error('Erreur parcelles', err)
     });
@@ -130,7 +131,7 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
         zoom: 13
       })
     });
-    this.afficherTousLesPolygones();
+    
     }
 // ── Afficher tous les polygones existants ──
   afficherTousLesPolygones(): void {
@@ -160,9 +161,31 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
       this.cdr.detectChanges();
     }
     // Voir Sur Carte 
-    voirSurCarte(p: Parcelle): void{
-      this.selectParcelle(p);
-    }
+    voirSurCarte(p: Parcelle): void {
+      this.selectedParcelle = p;
+      this.stopDrawing();
+
+      // Chercher le feature déjà dans vectorSource
+      const feature = this.vectorSource
+        .getFeatureById(p.id!) as Feature;
+
+      if (feature) {
+        // Feature existe → zoomer directement
+        const geometry = feature.getGeometry();
+        if (geometry) {
+          const extent = geometry.getExtent() as Extent;
+          this.map.getView().fit(extent, {
+            padding: [60, 60, 60, 60],
+            duration: 600,
+            maxZoom: 17
+          });
+        }
+      } else if (p.geometryJson) {
+        // Feature pas encore dans vectorSource → zoomer quand même
+        this.zoomSurParcelle(p);
+      }
+      this.cdr.detectChanges();
+    }     
       // ── Zoom sur une parcelle ──
       zoomSurParcelle(p: Parcelle): void{
         if(!p.geometryJson) return;
@@ -192,7 +215,6 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
       }
         // ── Commencer le dessin ──
       startDrawing(): void {
-        if(!this.selectedParcelle) return;
         this.stopDrawing();
         this.vectorSource.clear();
         this.geometryJson = '';
@@ -231,7 +253,12 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
         
         this.drawingMode = false;
         this.map.removeInteraction(this.draw);
-        this.showSaveModal = true;// Affiche la fenêtre/modal pour sauvegarder la parcelle
+        if(this.selectedParcelle){
+          this.savePolygon();
+        }else{
+          this.showSaveModal = true;// Affiche la fenêtre/modal pour sauvegarder la parcelle
+        }
+        
         this.cdr.detectChanges();
         });
         this.map.addInteraction(this.draw);
@@ -255,8 +282,9 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
       }
       // ── Sauvegarder polygone sur parcelle existante ──
       savePolygon(): void{
-        if(!this.selectedParcelle || !this.geometryJson ) return;
-        const updated: Parcelle = {
+        if( !this.geometryJson ) return;
+        if(this.selectedParcelle){
+          const updated: Parcelle = {
           ...this.selectedParcelle,
           geometryJson : this.geometryJson,
           superficie: parseFloat(this.calculatedArea)
@@ -278,6 +306,11 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
           },
           error: (err) => console.error('Erreur sauvegarde polygone', err)
         });
+        }else{
+          this.showSaveModal = true;
+          this.cdr.detectChanges();
+        }
+        
       }
       // ── Soumettre formulaire nouvelle parcelle ──
       submitParcelleForm(): void{
@@ -313,6 +346,7 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
           error: () => { this.errorMessage = 'Erreur lors de la création.'; }
         });
       }
+      
         // ── Fermer modal ──
   closeModal(): void {
     this.showSaveModal = false;

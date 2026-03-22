@@ -11,7 +11,7 @@
 .parcelles-page {
   display: flex;
   gap: 16px;
-  height: calc(100vh - 80x);
+  height: calc(100vh - 80px);
   min-height: 500px;
 }
 

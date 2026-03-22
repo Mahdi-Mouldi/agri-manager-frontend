@@ -157,7 +157,15 @@
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                           </svg>
                         </button>
-                        <button class="btn-action btn-delete-parcelle" (click)="deleteParcelle(parcelle.id!)" title="Supprimer">
+                        <button class="btn-action btn-ndvi-parcelle" (click)="openNdviModal(parcelle)" title="NDVI">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                          </svg>
+                        </button>
+                        <button class="btn-action btn-delete" (click)="deleteParcelle(parcelle.id!)" title="Supprimer">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -295,5 +303,122 @@
         {{ parcelleEditMode ? "Sauvegarder" : "Ajouter parcelle" }}
       </button>
     </div>
+  </div>
+</div>
+
+<!-- ── Modal NDVI ── -->
+<div class="modal-overlay ndvi-overlay" *ngIf="showNdviModal" (click)="closeNdviModal()">
+  <div class="ndvi-modal" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="ndvi-header">
+      <div class="ndvi-header-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V12"/><path d="M12 12C12 12 7 9 7 4c0 0 5 1 5 8z"/>
+          <path d="M12 12c0 0 5-3 5-8 0 0-5 1-5 8z"/>
+        </svg>
+        <span class="ndvi-title">Indices de végétation</span>
+        <span class="ndvi-parcelle-name" *ngIf="selectedParcelleNdvi">
+          — {{ selectedParcelleNdvi.name }}
+        </span>
+      </div>
+      <div class="ndvi-header-right">
+        <select class="ndvi-index-select" [(ngModel)]="selectedIndex">
+          <option value="ndvi">NDVI</option>
+          <option value="ndwi">NDWI</option>
+          <option value="evi">EVI</option>
+        </select>
+        <button class="ndvi-close" (click)="closeNdviModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Carte NDVI -->
+    <div class="ndvi-map-wrap">
+
+      <!-- Loading -->
+      <div class="ndvi-loading" *ngIf="ndviLoading">
+        <div class="ndvi-spinner"></div>
+        <p>Chargement des images NDVI...</p>
+      </div>
+
+      <!-- Carte -->
+      <div id="ndvi-map" *ngIf="!ndviLoading"></div>
+
+      <!-- Bouton plein écran -->
+      <button class="ndvi-fullscreen" title="Plein écran">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+      </button>
+
+      <!-- Stats NDVI -->
+      <div class="ndvi-stats" *ngIf="selectedNdviImage">
+        <div class="ndvi-stat">
+          <span class="stat-label">Moy.</span>
+          <span class="stat-value">{{ selectedNdviImage.ndviMean | number:'1.2-2' }}</span>
+        </div>
+        <div class="ndvi-stat">
+          <span class="stat-label">Max</span>
+          <span class="stat-value">{{ selectedNdviImage.ndviMax | number:'1.2-2' }}</span>
+        </div>
+        <div class="ndvi-stat">
+          <span class="stat-label">Min</span>
+          <span class="stat-value">{{ selectedNdviImage.ndviMin | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- No data -->
+      <div class="ndvi-no-data" *ngIf="!ndviLoading && ndviImages.length === 0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>Aucune image NDVI disponible</p>
+        <button class="btn-sync-ndvi" (click)="syncNdvi()">
+          Synchroniser les données
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Légende -->
+    <div class="ndvi-legend">
+      <div class="legend-labels">
+        <span>Faible</span>
+        <span>Modéré</span>
+        <span>Bonne</span>
+        <span>Excellente</span>
+      </div>
+      <div class="legend-gradient"></div>
+      <div class="legend-minmax">
+        <span>0</span>
+        <span>1</span>
+      </div>
+    </div>
+
+    <!-- Timeline dates -->
+    <div class="ndvi-timeline" *ngIf="ndviImages.length > 0">
+      <div class="timeline-scroll">
+        <div class="timeline-item"
+          *ngFor="let img of ndviImages"
+          [class.active]="selectedNdviImage?.id === img.id"
+          (click)="selectNdviDate(img)">
+          <div class="timeline-date">{{ formatDate(img.imageDate) }}</div>
+          <div class="timeline-weather">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+              <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+            </svg>
+          </div>
+          <div class="timeline-clouds">{{ img.cloudCoverage || 0 }} %</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

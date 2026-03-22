@@ -67,15 +67,17 @@
         <span class="superficie-badge" *ngIf="calculatedArea">{{ calculatedArea }} ha</span>
       </div>
       <div class="toolbar-right">
-        <button class="btn-toolbar btn-draw"
-          [class.active]="drawingMode"
-          (click)="startDrawing()"
-          [disabled]="!selectedParcelle">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
-          Dessiner
-        </button>
+            <!-- ✅ Un seul bouton Dessiner — toujours actif -->
+          <button class="btn-toolbar btn-draw"
+            [class.active]="drawingMode"
+            (click)="startDrawing()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            Dessiner
+          </button>
         <button class="btn-toolbar btn-save"
           (click)="savePolygon()"
           [disabled]="!geometryJson">
@@ -95,6 +97,7 @@
           </svg>
           Effacer
         </button>
+        
       </div>
     </div>
 
