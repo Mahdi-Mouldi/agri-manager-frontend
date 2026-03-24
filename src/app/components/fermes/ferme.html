@@ -229,8 +229,12 @@
           <input type="number" [(ngModel)]="fermeForm.superficieTotale" placeholder="0.0"/>
         </div>
         <div class="form-group">
-          <label>Farmer ID</label>
-          <input type="number" [(ngModel)]="fermeForm.farmer_id" placeholder="ID du farmer"/>
+          <label>Agriculteur *</label>
+          <select [(ngModel)]="fermeForm.farmer_id" [class.error]="fermeErrors.farmer_id">
+            <option [value]="0">Sélectionner un agriculteur</option>
+            <option *ngFor="let f of farmers" [value]="f.id">{{ f.name }}</option>
+          </select>
+          <span class="error-msg" *ngIf="fermeErrors.farmer_id">Requis</span>
         </div>
       </div>
       <div class="form-row">

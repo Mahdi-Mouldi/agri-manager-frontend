@@ -50,7 +50,7 @@ export class FermesComponent implements OnInit {
   fermeEditMode: boolean = false;
   fermeEditId: number | null = null;
   fermeForm: Ferme = { ferme_name: '', ferme_address: '', superficieTotale: 0, latitude: 0, longitude: 0, description: '', farmer_id: 0 };
-  fermeErrors = { ferme_name: false, ferme_address: false };
+  fermeErrors = { ferme_name: false, ferme_address: false, farmer_id: false};
 
   // Parcelle Modal
   showParcelleModal: boolean = false;
@@ -151,7 +151,7 @@ ndviImageLayer!: ImageLayer<Static>;
     this.fermeEditMode = false;
     this.fermeEditId = null;
     this.fermeForm = { ferme_name: '', ferme_address: '', superficieTotale: 0, latitude: 0, longitude: 0, description: '', farmer_id: 0 };
-    this.fermeErrors = { ferme_name: false, ferme_address: false };
+    this.fermeErrors = { ferme_name: false, ferme_address: false, farmer_id: false};
     this.errorMessage = '';
     this.showFermeModal = true;
   }
@@ -160,7 +160,7 @@ ndviImageLayer!: ImageLayer<Static>;
     this.fermeEditMode = true;
     this.fermeEditId = ferme.id!;
     this.fermeForm = { ...ferme };
-    this.fermeErrors = { ferme_name: false, ferme_address: false };
+    this.fermeErrors = { ferme_name: false, ferme_address: false, farmer_id: false};
     this.errorMessage = '';
     this.showFermeModal = true;
   }
@@ -168,7 +168,9 @@ ndviImageLayer!: ImageLayer<Static>;
   submitFermeForm(): void {
     this.fermeErrors.ferme_name    = !this.fermeForm.ferme_name.trim();
     this.fermeErrors.ferme_address = !this.fermeForm.ferme_address.trim();
-    if (this.fermeErrors.ferme_name || this.fermeErrors.ferme_address) return;
+    this.fermeErrors.farmer_id = !this.fermeForm.farmer_id || 
+                              this.fermeForm.farmer_id === 0;
+    if (this.fermeErrors.ferme_name || this.fermeErrors.ferme_address  || this.fermeErrors.farmer_id) return;
 
     if (this.fermeEditMode && this.fermeEditId) {
       this.fermeService.updateFerme(this.fermeEditId, this.fermeForm).subscribe({
@@ -327,6 +329,9 @@ ndviImageLayer!: ImageLayer<Static>;
 
   initNdviMap(): void {
     if (!this.selectedParcelleNdvi) return; // guard
+
+    // ✅ Vérifier imageUrl avant de créer ImageLayer
+    const imageUrl = this.selectedNdviImage?.imageUrl;
 
     // Style du polygone vert
     const polygonStyle = new Style({

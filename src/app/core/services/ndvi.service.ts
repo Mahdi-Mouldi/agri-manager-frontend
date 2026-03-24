@@ -14,7 +14,7 @@ export class NdviService{
         return this.http.post(
             `${this.url}/polygon/${parcelleId}`,
             {},
-            { responseType: 'text' }  // ← lire comme texte brut
+            { responseType: 'text' }  // ← lire  comme texte brut
   );
 }
     searchNdviImages(parcelleId: number, startDate: string, endDate: string): Observable<string> {

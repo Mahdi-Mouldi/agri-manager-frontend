@@ -1,0 +1,190 @@
+<div class="satellite-page">
+
+  <!-- ── Filtres ── -->
+  <div class="filters-section">
+    <div class="filters-row">
+
+      <!-- Filtrer par agriculteur -->
+      <div class="filter-group">
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="filter-input" placeholder="Filtrer par agriculteur"
+            [(ngModel)]="filterAgriculteur" (input)="applyFilters()"/>
+          <button class="clear-btn" *ngIf="filterAgriculteur"
+            (click)="filterAgriculteur=''; applyFilters()">×</button>
+        </div>
+        <label class="filter-label">Filtrer par agriculteur</label>
+      </div>
+
+      <!-- Filtrer par culture -->
+      <div class="filter-group">
+        <select class="filter-select" [(ngModel)]="filterCulture" (change)="applyFilters()">
+          <option value="">Tous</option>
+          <option *ngFor="let c of cultures" [value]="c">{{ c }}</option>
+        </select>
+        <label class="filter-label">Filtrer par culture</label>
+      </div>
+
+      <!-- Filtrer par variété -->
+      <div class="filter-group">
+        <select class="filter-select" [(ngModel)]="filterVariete" (change)="applyFilters()">
+          <option value="">Tous</option>
+          <option *ngFor="let v of varietes" [value]="v">{{ v }}</option>
+        </select>
+        <label class="filter-label">Filtrer par variété</label>
+      </div>
+
+      <!-- Refresh -->
+      <button class="btn-refresh" (click)="loadData()" title="Rafraîchir">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+      </button>
+
+    </div>
+
+    <div class="filters-row">
+
+      <!-- Filtrer par région -->
+      <div class="filter-group">
+        <select class="filter-select" [(ngModel)]="filterRegion" (change)="applyFilters()">
+          <option value="">Tous</option>
+          <option *ngFor="let r of regions" [value]="r">{{ r }}</option>
+        </select>
+        <label class="filter-label">Filtrer par région</label>
+      </div>
+
+      <!-- Filtrer par propriété -->
+      <div class="filter-group">
+        <select class="filter-select" [(ngModel)]="filterPropriete" (change)="applyFilters()">
+          <option value="">Tous</option>
+          <option value="Location">Location</option>
+          <option value="Propriété">Propriété</option>
+        </select>
+        <label class="filter-label">Filtrer par propriété</label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Contenu principal : Météo + Carte ── -->
+  <div class="main-content">
+
+    <!-- Widget Météo -->
+    <div class="meteo-panel" [class.collapsed]="meteoCollapsed">
+      <button class="meteo-toggle" (click)="meteoCollapsed = !meteoCollapsed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline *ngIf="!meteoCollapsed" points="15 18 9 12 15 6"/>
+          <polyline *ngIf="meteoCollapsed" points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+
+      <div class="meteo-content" *ngIf="!meteoCollapsed">
+        <div class="meteo-title">Météo</div>
+
+        <!-- Météo actuelle -->
+        <div class="meteo-now" *ngIf="currentWeather">
+          <div class="meteo-now-header">
+            <span class="meteo-label">Maintenant</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+              <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+            </svg>
+          </div>
+          <div class="meteo-temp">{{ currentWeather.temperature | number:'1.1-1' }}°C</div>
+          <div class="meteo-details">
+            <div class="meteo-detail">
+              <span class="detail-label">Nuages:</span>
+              <span>{{ currentWeather.cloudCover }} %</span>
+            </div>
+            <div class="meteo-detail">
+              <span class="detail-label">Humidité:</span>
+              <span>{{ currentWeather.humidity }} %</span>
+            </div>
+            <div class="meteo-detail">
+              <span class="detail-label">Vent:</span>
+              <span>{{ currentWeather.windSpeed }} m/s</span>
+            </div>
+            <div class="meteo-detail">
+              <span class="detail-label">Pression:</span>
+              <span>{{ currentWeather.pressure }} hpa</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prévisions 3 jours -->
+        <div class="meteo-forecast" *ngFor="let day of forecastDays">
+          <div class="forecast-day">
+            <div class="forecast-header">
+              <span class="forecast-label">{{ day.label }}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+              </svg>
+            </div>
+            <div class="forecast-temp">{{ day.tempMax | number:'1.1-1' }}°C</div>
+            <div class="forecast-details">
+              <div class="meteo-detail">
+                <span class="detail-label">Nuages:</span>
+                <span>{{ day.clouds }} %</span>
+              </div>
+              <div class="meteo-detail">
+                <span class="detail-label">Humidité:</span>
+                <span>{{ day.humidity }} %</span>
+              </div>
+              <div class="meteo-detail">
+                <span class="detail-label">Pression:</span>
+                <span>{{ day.pressure }} hpa</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading météo -->
+        <div class="meteo-loading" *ngIf="weatherLoading">
+          <div class="loading-spinner"></div>
+          <span>Chargement...</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Carte Satellite ── -->
+    <div class="map-section">
+
+      <!-- Boutons Plan/Satellite -->
+      <div class="map-type-btns">
+        <button [class.active]="mapType === 'plan'" (click)="setMapType('plan')">Plan</button>
+        <button [class.active]="mapType === 'satellite'" (click)="setMapType('satellite')">Satellite</button>
+      </div>
+
+      <!-- Carte OpenLayers -->
+      <div id="satellite-map"></div>
+
+      <!-- Popup Ferme -->
+      <div class="ferme-popup" *ngIf="selectedFerme" [style.left.px]="popupX" [style.top.px]="popupY">
+        <button class="popup-close" (click)="closePopup()">×</button>
+        <div class="popup-title">{{ selectedFerme.ferme_name }}</div>
+        <div class="popup-row">
+          <span class="popup-label">Agriculteur:</span>
+          <span class="popup-value blue">{{ getFarmerName(selectedFerme.farmer_id) }}</span>
+        </div>
+        <div class="popup-row">
+          <span class="popup-label">Surface:</span>
+          <span class="popup-value">{{ selectedFerme?.superficieTotale }} ha</span>
+        </div>
+        <div class="popup-row">
+          <span class="popup-label">Propriété foncière:</span>
+          <span class="popup-value">{{ selectedFerme.description || '...' }}</span>
+        </div>
+      </div>
+
+      <!-- Loading carte -->
+      <div class="map-loading" *ngIf="mapLoading">
+        <div class="loading-spinner white"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
