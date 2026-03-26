@@ -302,5 +302,38 @@
   display: flex; align-items: center; justify-content: center; gap: 7px;
   transition: background .15s;
 }
+
 .btn-submit svg { width: 15px; height: 15px; }
 .btn-submit:hover { background: #15803d; }
+.error-distance {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+  white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.error-distance svg { 
+  width: 16px; 
+  height: 16px; 
+  stroke: #dc2626; 
+  flex-shrink: 0; 
+}
+.error-distance button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #dc2626;
+  margin-left: 8px;
+}

@@ -39,6 +39,7 @@ export class VueSatellite implements OnInit, AfterViewInit{
   vectorSource= new VectorSource();
   vectorLayer! : VectorLayer;
   tileLayer!: TileLayer;
+  labelsLayer!: TileLayer;
   //Données
   parcelles: Parcelle[] = [];
   fermes: Ferme[] = [];
@@ -159,10 +160,18 @@ export class VueSatellite implements OnInit, AfterViewInit{
         maxZoom: 19
       })
     });
+      // ✅ NOUVEAU : couche des noms (villes, pays, routes)
+    this.labelsLayer = new TileLayer({
+      source: new XYZ({
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+        maxZoom: 19,
+      }),
+      opacity: 1
+    });
     // Créer la carte
     this.map = new Map({
       target: 'satellite-map',
-      layers: [this.tileLayer, this.vectorLayer],
+      layers: [this.tileLayer,this.labelsLayer, this.vectorLayer],
       view: new View({
         center: fromLonLat([10.1, 36.8]),
         zoom: 9
@@ -269,10 +278,22 @@ export class VueSatellite implements OnInit, AfterViewInit{
   // changer le type de map
   setMapType(type: string): void {
     this.mapType = type;
-        const url = type === 'satellite'
-      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-      this.tileLayer.setSource(new XYZ({url, maxZoom: 19}));
+    if (type === 'satellite') {
+        // Satellite + labels
+        this.tileLayer.setSource(new XYZ({
+          url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          maxZoom: 19
+        }));
+        this.labelsLayer.setVisible(true); // ✅ Afficher les noms
+      } else {
+        // OpenStreetMap (a déjà les noms intégrés)
+        this.tileLayer.setSource(new XYZ({
+          url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          maxZoom: 19
+        }));
+        this.labelsLayer.setVisible(false); // ✅ Cacher les labels (OSM les a déjà)
+      }
+
       this.cdr.detectChanges();
   }
 

@@ -304,7 +304,16 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
             this.calculatedArea = '';
             this.cdr.detectChanges();
           },
-          error: (err) => console.error('Erreur sauvegarde polygone', err)
+          // Dans savePolygon() et submitParcelleForm()
+          error: (err) => {
+            // ✅ Afficher message d'erreur clair
+            if (err.error?.message?.includes('trop éloignée')) {
+              this.errorMessage = err.error.message;
+            } else {
+              this.errorMessage = 'Erreur lors de la sauvegarde.';
+            }
+            this.cdr.detectChanges();
+          }
         });
         }else{
           this.showSaveModal = true;
@@ -343,7 +352,16 @@ export class ParcellesComponent implements OnInit, AfterViewInit{
             this.selectedParcelle = created; 
             this.cdr.detectChanges();
           },
-          error: () => { this.errorMessage = 'Erreur lors de la création.'; }
+          // Dans savePolygon() et submitParcelleForm()
+          error: (err) => {
+            // ✅ Afficher message d'erreur clair
+            if (err.error?.message?.includes('trop éloignée')) {
+              this.errorMessage = err.error.message;
+            } else {
+              this.errorMessage = 'Erreur lors de la sauvegarde.';
+            }
+            this.cdr.detectChanges();
+          }
         });
       }
       
