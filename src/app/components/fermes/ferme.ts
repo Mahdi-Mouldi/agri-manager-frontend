@@ -286,46 +286,59 @@ ndviImageLayer!: ImageLayer<Static>;
     this.selectedIndex = 'ndvi';
     this.cdr.detectChanges();
     this.syncNdvi();
+    this.loadNdvi();
+  }
+  loadNdvi(): void {
+    if(!this.selectedParcelleNdvi?.id) return;
+    this.ndviService.getNdviImagesByParcelle(this.selectedParcelleNdvi.id).subscribe({
+      next: (images) => {
+        if(images && images.length > 0){
+          // ✅ Images déjà en BDD → afficher directement, pas d'appel Agromonitoring
+          this.ndviImages = images;
+          this.selectedNdviImage = images[0];
+          this.ndviLoading = false;
+          this.cdr.detectChanges();
+          setTimeout(() => this.initNdviMap(), 100);
+        }else{
+          // Pas d'image en BDD → appeler Agromonitoring pour les récupérer et les sauvegarder
+          this.syncNdvi();
+        }
+      },error: (err) => {
+        this.syncNdvi(); // même en cas d'erreur, tenter de récupérer les images depuis Agromonitoring
+      }
+      });
   }
 
   syncNdvi(): void {
-    if (!this.selectedParcelleNdvi || !this.selectedParcelleNdvi.id) return;
+  if (!this.selectedParcelleNdvi?.id) return;
+  const parcelleId = this.selectedParcelleNdvi.id;
+  const startDate = '2025-01-01';
+  const endDate = new Date().toISOString().split('T')[0];
 
-    const parcelleId = this.selectedParcelleNdvi.id;
-    const startDate = '2025-01-01';
-    const endDate = new Date().toISOString().split('T')[0]; // aujourd'hui
-
-    this.ndviLoading = true;
-    this.ndviImages = [];
-    this.selectedNdviImage = null;
-
-    // Étape 1 : créer le polygone sur Agromonitoring
-    this.ndviService.createPolygon(parcelleId).subscribe({
-      next: () => {
-        // Étape 2 : sync les images NDVI depuis Agromonitoring + sauvegarder en BDD
-        this.ndviService.syncNdviImages(parcelleId, startDate, endDate).subscribe({
-          next: (images) => {
-            this.ndviImages = images;
-            this.selectedNdviImage = images.length > 0 ? images[0] : null;
-            this.ndviLoading = false;
-            this.cdr.detectChanges();
-            // Étape 3 : initialiser la carte après que le DOM soit prêt
-            setTimeout(() => this.initNdviMap(), 100);
-          },
-          error: (err) => {
-            console.error('Erreur sync NDVI', err);
-            this.ndviLoading = false;
-            this.cdr.detectChanges();
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Erreur création polygone', err);
-        this.ndviLoading = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
+  this.ndviService.createPolygon(parcelleId).subscribe({
+    next: () => {
+      this.ndviService.syncNdviImages(parcelleId, startDate, endDate).subscribe({
+        next: (images) => {
+          this.ndviImages = images;
+          this.selectedNdviImage = images.length > 0 ? images[0] : null;
+          this.ndviLoading = false;
+          this.cdr.detectChanges();
+          setTimeout(() => this.initNdviMap(), 100);
+        },
+        error: (err) => {
+          console.error('Erreur sync NDVI', err);
+          this.ndviLoading = false;
+          this.cdr.detectChanges();
+        }
+      });
+    },
+    error: (err) => {
+      console.error('Erreur création polygone', err);
+      this.ndviLoading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   initNdviMap(): void {
     if (!this.selectedParcelleNdvi) return; // guard

@@ -38,4 +38,7 @@ export class NdviService{
     deleteImageByParcelle(parcelleId: number): Observable<void> {
         return this.http.delete<void>(`${this.url}/parcelle/${parcelleId}`);
     }
+    getNdviImagesByParcelle(parcelleId: number): Observable<NdviImage[]>{
+        return this.http.get<NdviImage[]>(`${this.url}/parcelle/${parcelleId}`);
+    }
 }
