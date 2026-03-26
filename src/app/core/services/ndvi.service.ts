@@ -41,4 +41,6 @@ export class NdviService{
     getNdviImagesByParcelle(parcelleId: number): Observable<NdviImage[]>{
         return this.http.get<NdviImage[]>(`${this.url}/parcelle/${parcelleId}`);
     }
+    
+    
 }

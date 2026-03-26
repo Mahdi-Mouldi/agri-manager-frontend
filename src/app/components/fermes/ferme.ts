@@ -236,7 +236,7 @@ ndviImageLayer!: ImageLayer<Static>;
             const i = this.parcelles[fermeId].findIndex(p => p.id === updated.id);
             if (i !== -1) { this.parcelles[fermeId][i] = updated; this.parcelles = { ...this.parcelles }; }
           }
-          this.closeModal();
+          this.closeModal();  
           this.cdr.detectChanges();
         },
         error: () => { this.errorMessage = 'Erreur mise à jour.'; }
@@ -285,7 +285,6 @@ ndviImageLayer!: ImageLayer<Static>;
     this.selectedNdviImage = null;
     this.selectedIndex = 'ndvi';
     this.cdr.detectChanges();
-    this.syncNdvi();
     this.loadNdvi();
   }
   loadNdvi(): void {
@@ -340,90 +339,85 @@ ndviImageLayer!: ImageLayer<Static>;
   });
 }
 
-  initNdviMap(): void {
-    if (!this.selectedParcelleNdvi) return; // guard
+initNdviMap(): void {
+  if (!this.selectedParcelleNdvi) return;
 
-    // ✅ Vérifier imageUrl avant de créer ImageLayer
-    const imageUrl = this.selectedNdviImage?.imageUrl;
+  const imageUrl = this.selectedNdviImage?.imageUrl;
 
-    // Style du polygone vert
-    const polygonStyle = new Style({
-      fill: new Fill({ color: 'rgba(34, 197, 94, 0.2)' }),
-      stroke: new Stroke({ color: '#16a34a', width: 2.5 })
-    });
+  const polygonStyle = new Style({
+    fill: new Fill({ color: 'rgba(34, 197, 94, 0.2)' }),
+    stroke: new Stroke({ color: '#16a34a', width: 2.5 })
+  });
 
-    // VectorSource : stocke le polygone de la parcelle
-    const vectorSource = new VectorSource();
+  const vectorSource = new VectorSource();
 
-    // Lire le GeoJSON et l'ajouter au vectorSource
-    if (this.selectedParcelleNdvi?.geometryJson) {
-      try {
-        const feature = new GeoJSON().readFeature(
-          this.selectedParcelleNdvi.geometryJson,
-          {
-            dataProjection: 'EPSG:4326',
-            featureProjection: 'EPSG:3857'
-          }
-        ) as Feature;
-        vectorSource.addFeature(feature);
-      } catch (e) {
-        console.error('GeoJSON invalide', e);
-      }
+  if (this.selectedParcelleNdvi?.geometryJson) {
+    try {
+      const feature = new GeoJSON().readFeature(
+        this.selectedParcelleNdvi.geometryJson,
+        {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:3857'
+        }
+      ) as Feature;
+      vectorSource.addFeature(feature);
+    } catch (e) {
+      console.error('GeoJSON invalide', e);
     }
+  }
 
-    // VectorLayer : affiche le polygone sur la carte
-    const vectorLayer = new VectorLayer({
-      source: vectorSource,
-      style: polygonStyle
-    });
+  const vectorLayer = new VectorLayer({
+    source: vectorSource,
+    style: polygonStyle
+  });
 
-    // ImageLayer : affiche l'image NDVI par dessus la carte
-    const extent = vectorSource.getExtent();
+  const extent = vectorSource.getExtent();
+
+  // ✅ Ta modification
+  const layers: any[] = [
+    new TileLayer({
+      source: new XYZ({
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        maxZoom: 19
+      })
+    }),
+    vectorLayer
+  ];
+
+  if (imageUrl && imageUrl.trim() !== '') {
     this.ndviImageLayer = new ImageLayer({
       source: new Static({
-        url: this.selectedNdviImage?.imageUrl || '',
+        url: imageUrl,
         imageExtent: extent && extent[0] !== Infinity ? extent : [0, 0, 1, 1],
         projection: 'EPSG:3857'
       }),
       opacity: 0.8
     });
-
-    // Créer la carte dans div#ndvi-map
-    this.ndviMap = new Map({
-      target: 'ndvi-map',
-      layers: [
-        // Couche 1 : fond satellite Esri
-        new TileLayer({
-          source: new XYZ({
-            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            maxZoom: 19
-          })
-        }),
-        // Couche 2 : polygone vert de la parcelle
-        vectorLayer,
-        // Couche 3 : image NDVI colorée par dessus
-        this.ndviImageLayer
-      ],
-      view: new View({
-        center: fromLonLat([10.1, 36.8]),
-        zoom: 13
-      })
-    });
-
-    // Zoomer automatiquement sur le polygone
-    if (this.selectedParcelleNdvi.geometryJson) {
-  const extent = vectorSource.getExtent();
-  if (extent && extent[0] !== Infinity) {
-    this.ndviMap.getView().fit(extent, {
-      padding: [40, 40, 40, 40],
-      duration: 500,
-      maxZoom: 17
-    });
+    layers.push(this.ndviImageLayer);
   }
+
+  this.ndviMap = new Map({
+    target: 'ndvi-map',
+    layers: layers,
+    view: new View({
+      center: fromLonLat([10.1, 36.8]),
+      zoom: 13
+    })
+  });
+
+  if (this.selectedParcelleNdvi.geometryJson) {
+    const extent = vectorSource.getExtent();
+    if (extent && extent[0] !== Infinity) {
+      this.ndviMap.getView().fit(extent, {
+        padding: [40, 40, 40, 40],
+        duration: 500,
+        maxZoom: 17
+      });
+    }
+  }
+
+  this.cdr.detectChanges();
 }
-
-    this.cdr.detectChanges();
-  }
 
   selectNdviDate(image: NdviImage): void {
     this.selectedNdviImage = image;
