@@ -8,5 +8,6 @@ export interface Ferme {
     description: string;
     farmer_id: number;
     synced?: boolean;  // ← ajouter cette ligne
+    geometryJson?: string; // ← ajouter cette ligne
 
     }
