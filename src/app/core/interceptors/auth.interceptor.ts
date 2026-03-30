@@ -1,4 +1,4 @@
-/*Ce code est un intercepteur HTTP.
+  /*Ce code est un intercepteur HTTP.
 
 Son rôle principal : avant d’envoyer chaque requête au serveur, il vérifie si l’utilisateur a un token dans le navigateur.
 

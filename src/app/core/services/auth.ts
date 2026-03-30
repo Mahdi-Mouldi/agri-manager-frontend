@@ -12,14 +12,14 @@ export class Auth {
 Router → c’est pour changer de page dans l’application Angular.*/
     private apiUrl = 'http://localhost:8080/auth';
     constructor(private http: HttpClient, private router: Router) {}
-    login(username: string, password: string): Observable<any>{
-        return this.http.post(`${this.apiUrl}/login`, {username, password}); //envoie les infos au serveur backend
+    login(email: string, password: string): Observable<any>{
+        return this.http.post(`${this.apiUrl}/login`, {email, password}); //envoie les infos au serveur backend
     }
 
-      register(username: string, password: string): Observable<string> {
+      register(email: string, password: string): Observable<string> {
     return this.http.post(
       `${this.apiUrl}/register`,
-      { username, password },
+      { email, password },
       { responseType: 'text' }  // خاطر response متاع register موش JSON
     );
   }

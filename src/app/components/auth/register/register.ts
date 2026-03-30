@@ -12,7 +12,7 @@ import { Auth } from '../../../core/services/auth';
   styleUrl: './register.scss'
 })
 export class RegisterComponent {
-  username: string = '';
+  email: string = '';
   password: string = '';
   loading: boolean = false;
   errorMessage: string = '';
@@ -25,14 +25,14 @@ export class RegisterComponent {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.authService.register(this.username, this.password).subscribe({
+    this.authService.register(this.email, this.password).subscribe({
       next: () => {
-        this.successMessage = 'Compte créé avec succès ! Redirection...';
-        setTimeout(() => this.router.navigate(['/login']), 1500);
+        this.loading = false;
+        this.successMessage = 'Compte créé avec succès ! Vérifiez votre email avant de vous connecter.';
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = 'Erreur lors de la création du compte. Réessayez.';
+        this.errorMessage = error?.error || 'Erreur lors de la création du compte. Réessayez.';
         console.error('Register échoué', error);
       }
     });

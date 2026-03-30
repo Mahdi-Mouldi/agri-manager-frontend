@@ -12,7 +12,7 @@ import { Auth } from '../../../core/services/auth';
   styleUrl: './login.scss'
 })
 export class LoginComponent {
-  username: string = '';
+  email: string = '';
   password: string = '';
   loading: boolean = false;
   errorMessage: string = '';
@@ -23,14 +23,15 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    this.authService.login(this.username, this.password).subscribe({
+    this.authService.login(this.email, this.password).subscribe({
       next: (reponse: any) => {
         this.authService.setToken(reponse.token);
+        this.loading = false;
         this.router.navigate(['/app/dashboard']);
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect.';
+        this.errorMessage = error?.error || 'Email ou mot de passe incorrect.';
         console.error('Login échoué', error);
       }
     });
