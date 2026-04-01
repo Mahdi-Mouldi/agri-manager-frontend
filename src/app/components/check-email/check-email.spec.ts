@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RegisterC } from './register';
+import { CheckEmail } from './check-email';
 
-describe('Register', () => {
-  let component: Register;
-  let fixture: ComponentFixture<Register>;
+describe('CheckEmail', () => {
+  let component: CheckEmail;
+  let fixture: ComponentFixture<CheckEmail>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Register]
+      imports: [CheckEmail]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Register);
+    fixture = TestBed.createComponent(CheckEmail);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

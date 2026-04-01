@@ -1,0 +1,29 @@
+<div class="status-page">
+  <div class="status-card">
+    <div class="status-icon" *ngIf="loading">⏳</div>
+    <div class="status-icon success" *ngIf="success && !loading">✅</div>
+    <div class="status-icon error" *ngIf="errorMessage && !loading">❌</div>
+
+    <h1 *ngIf="loading">Vérification en cours...</h1>
+
+    <ng-container *ngIf="success && !loading">
+      <h1>Email vérifié avec succès</h1>
+      <p class="subtitle">
+        Votre compte est maintenant activé. Vous pouvez vous connecter.
+      </p>
+
+      <div class="actions">
+        <a class="btn-primary" routerLink="/login">Se connecter</a>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="errorMessage && !loading">
+      <h1>Échec de la vérification</h1>
+      <p class="subtitle">{{ errorMessage }}</p>
+
+      <div class="actions">
+        <a class="btn-secondary" routerLink="/login">Retour à la connexion</a>
+      </div>
+    </ng-container>
+  </div>
+</div>

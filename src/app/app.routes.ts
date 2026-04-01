@@ -8,11 +8,14 @@ import { MainLayout } from './components/main-layout/main-layout';
 import { VueSatellite } from './components/vue-satellite/vue-satellite';
 import { authGuard } from './core/guards/auth.guards';
 import { FermesComponent } from './components/fermes/ferme';
-
+import { VerifyEmailComponent } from './components/verify-email/verify-email';
+import { CheckEmailComponent } from './components/check-email/check-email';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  {path: 'verify-email', component: VerifyEmailComponent},
+  {path: 'check-email', component: CheckEmailComponent},
 
   {
     path: 'app',
@@ -24,6 +27,7 @@ export const routes: Routes = [
       { path: 'parcelles', component: ParcellesComponent },  // ← ajouté
       { path: 'fermes', component: FermesComponent },
       { path: 'vue-satellite', component: VueSatellite},
+
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

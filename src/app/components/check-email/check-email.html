@@ -1,0 +1,22 @@
+<div class="status-page">
+  <div class="status-card">
+    <div class="status-icon">📧</div>
+    <h1>Consultez votre email</h1>
+    <p class="subtitle">
+      Un lien de vérification a été envoyé à votre adresse email.
+    </p>
+
+    <div class="email-box" *ngIf="email">
+      {{ email }}
+    </div>
+
+    <p class="info">
+      Ouvrez votre boîte de réception, puis cliquez sur le lien de vérification pour activer votre compte.
+    </p>
+
+    <div class="actions">
+      <a class="btn-primary" href="https://mail.google.com" target="_blank">Ouvrir Gmail</a>
+      <a class="btn-secondary" routerLink="/login">Retour à la connexion</a>
+    </div>
+  </div>
+</div>

@@ -28,7 +28,9 @@ export class RegisterComponent {
     this.authService.register(this.email, this.password).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Compte créé avec succès ! Vérifiez votre email avant de vous connecter.';
+        this.router.navigate(['/check-email'], {
+          queryParams: { email: this.email }
+        });
       },
       error: (error) => {
         this.loading = false;
