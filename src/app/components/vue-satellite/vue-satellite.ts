@@ -22,7 +22,7 @@ import { FermeService } from '../../core/services/ferme.service';
 import { FarmerService } from '../../core/services/farmer.service';
  
 // Models
-import { Parcelle } from '../../core/models/parcelle.model';
+import { Parcelle } from '../../core/models/parcelle.model';  
 import { Ferme } from '../../core/models/ferme.model';
 import { Farmer } from '../../core/models/farmer.model';
 import { WeatherService } from '../../core/services/weather.service';

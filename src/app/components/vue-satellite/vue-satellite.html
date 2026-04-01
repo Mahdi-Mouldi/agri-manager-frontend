@@ -96,20 +96,20 @@
           <div class="meteo-temp">{{ currentWeather.temperature | number:'1.1-1' }}°C</div>
           <div class="meteo-details">
             <div class="meteo-detail">
-              <span class="detail-label">Nuages:</span>
-              <span>{{ currentWeather.cloudCover }} %</span>
+              <span class="detail-label">Temp max:</span>
+              <span>{{ currentWeather.temperatureMax }} %</span>
             </div>
             <div class="meteo-detail">
-              <span class="detail-label">Humidité:</span>
-              <span>{{ currentWeather.humidity }} %</span>
+              <span class="detail-label">Temp min:</span>
+              <span>{{ currentWeather.temperatureMin }} %</span>
             </div>
             <div class="meteo-detail">
               <span class="detail-label">Vent:</span>
-              <span>{{ currentWeather.windSpeed }} m/s</span>
+              <span>{{ currentWeather.windSpeedMax }} m/s</span>
             </div>
             <div class="meteo-detail">
-              <span class="detail-label">Pression:</span>
-              <span>{{ currentWeather.pressure }} hpa</span>
+              <span class="detail-label">Pluie:</span>
+              <span>{{ currentWeather.precipitation }} hpa</span>
             </div>
           </div>
         </div>
